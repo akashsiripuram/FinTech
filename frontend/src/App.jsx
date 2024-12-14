@@ -1,15 +1,21 @@
-import './App.css'
-
+import "./App.css";
+import Login from "./pages/login";
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+  RouterProvider,
+} from "react-router-dom";
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Login />,
+      children: [{ path: "/login", element: <Login /> }],
+    },
+  ]);
 
-
-  return (
-    <>
-      <h1 className="text-3xl font-bold underline">
-      Hello world!
-      </h1>
-    </>
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;
