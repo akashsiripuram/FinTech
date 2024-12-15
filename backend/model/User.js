@@ -1,5 +1,4 @@
-import mongoose from "mongoose";
-
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
     firstname: { type: String, required: true },
@@ -9,8 +8,7 @@ const UserSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-}, { timestamps: true }); 
-
+}, { timestamps: true });
 
 UserSchema.pre('save', function (next) {
     this.fullName = `${this.firstname} ${this.lastname}`;
@@ -18,4 +16,4 @@ UserSchema.pre('save', function (next) {
 });
 
 const User = mongoose.model("User", UserSchema);
-export default User;
+module.exports = User;

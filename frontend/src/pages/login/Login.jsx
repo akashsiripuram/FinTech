@@ -1,55 +1,76 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./login.css";
-import axios from "axios";
 
 export default function Login() {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [user, setUser] = useState(null);
-    const [error, setError] = useState(false);
-    
-    const handleSubmit = async (e) => {
+    const [error, setError] = useState(null);
+
+    const navigate = useNavigate();
+
+    async function loginUser(e) {
         e.preventDefault();
         setIsLoading(true);
-        setError(false);
-
-        const formData = new FormData(e.target);
-        const username = formData.get("username");
-        const password = formData.get("password");
-        
+        setError(null);
+    
         try {
-            const axiosInstance = axios.create({
-                baseURL: "http://localhost:3000/api",
-                withCredentials: true,
+            const response = await fetch("http://localhost:3000/api/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ username, password }),
             });
-            const response = await axiosInstance.post("/login", { username, password });
-            console.log(response.data);
-        } catch (e) {
-            setError(true);
-            console.error(e.message);
+    
+            // Check if the response status is ok
+            if (response.status !== 200) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+    
+            // Parse the JSON response
+            const data = await response.json();
+            console.log(data); // Check the response data
+    
+            if (data.token) {
+                alert("Login successful");
+                localStorage.setItem("token", data.token); // Store token in localStorage
+                navigate("/dashboard");
+            } else {
+                throw new Error(data.message || "Login failed");
+            }
+        } catch (err) {
+            console.error(err); // Log the error for debugging
+            setError(err.message);
         } finally {
             setIsLoading(false);
         }
-    };
+    }
+    
+
+    
 
     return (
         <div className="login flex items-center justify-center h-screen bg-gray-100">
             <div className="login-container border-2 rounded-3xl shadow-lg h-[80vh] w-[60vw] flex flex-col p-4">
                 <div className="project-name text-[#702DFF] font-bold m-2 text-3xl">FinTech</div>
                 <div className="flex flex-row justify-around space-x-2 p-6">
-                    {/* login form */}
+                    {/* Login form */}
                     <div className="login-form flex flex-col justify-between space-y-4 w-1/2">
                         <div className="flex flex-col space-y-1">
                             <h1 className="text-2xl font-semibold">Login</h1>
-                            <h3 className="text-[0.6rem] text-gray-700">Login to access your expenses</h3>
+                            <h3 className="text-[0.6rem] text-gray-700">
+                                Login to access your expenses
+                            </h3>
                         </div>
-                        <form onSubmit={handleSubmit} className="input-grp flex flex-col space-y-1">
+                        <form onSubmit={loginUser} className="input-grp flex flex-col space-y-1">
                             <label htmlFor="email">Email</label>
                             <input
                                 type="text"
                                 id="email"
                                 className="bg-transparent border-[1px] rounded-md focus:outline-none px-3 py-1"
-                                name="username"
-                                placeholder="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Username"
                                 required
                             />
                             <label htmlFor="password">Password</label>
@@ -57,13 +78,16 @@ export default function Login() {
                                 type="password"
                                 id="password"
                                 className="bg-transparent border-[1px] rounded-md focus:outline-none px-3 py-1"
-                                name="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 placeholder="Password"
                                 required
                             />
                             <button
                                 type="submit"
-                                className="bg-[#702DFF] rounded-md py-1 text-white"
+                                className={`bg-[#702DFF] rounded-md py-1 text-white ${
+                                    isLoading ? "opacity-50" : ""
+                                }`}
                                 disabled={isLoading}
                             >
                                 {isLoading ? "Loading..." : "Login"}
@@ -71,7 +95,7 @@ export default function Login() {
                         </form>
                         {error && (
                             <div className="text-red-500 text-xs text-center mt-2">
-                                Login failed. Please try again.
+                                {error}
                             </div>
                         )}
                         <div className="text-center text-xs">
@@ -82,7 +106,7 @@ export default function Login() {
                         </div>
                         <div className="text-center text-xs text-red-500">Forgot Password?</div>
                     </div>
-                    {/* image container */}
+                    {/* Image container */}
                     <div className="image-container w-1/2">
                         <img
                             src="/login-vector.png"
