@@ -1,7 +1,10 @@
+import LeftBar from "../../components/sidebar/leftbar/LeftBar";
+
 export default function HomePage(){
     return(
-        <div>
-            Home Page
+        <div className="flex flex-row">
+            
+            
         </div>
     )
 }

@@ -4,6 +4,7 @@ import axios from "axios";
 
 export default function Login() {
     const [isLoading, setIsLoading] = useState(false);
+    const [user, setUser] = useState(null);
     const [error, setError] = useState(false);
     
     const handleSubmit = async (e) => {
