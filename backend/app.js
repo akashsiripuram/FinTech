@@ -1,8 +1,11 @@
-const e = require("express");
+// const e = require("express");
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const app = express();
+const cors = require('cors');
+const bcrypt = require("bcrypt");
 
+app.use(cors({origin:"http://localhost:5173",credentials:true}));
 app.use(express.json());
 
 let users = [
@@ -40,6 +43,7 @@ const generateRefreshToken=(user)=>{
 
 app.post("/api/login", (req, res) => {
   const { username, password } = req.body;
+  
   const user = users.find((u) => {
     return u.username === username && u.password === password;
   });
@@ -52,7 +56,7 @@ app.post("/api/login", (req, res) => {
       accessToken,
       refreshToken
     });
-    return res.json(user);
+     
   } else {
     return res.status(401).json({ message: "Invalid credentials" });
   }
