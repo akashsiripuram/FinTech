@@ -1,4 +1,50 @@
+import { useState } from "react"
+import axios from "axios";
+
 export default function Register(){
+    const [isLoading,setIsLoading]=useState(false);
+    const [error, setError]=useState(null);
+    const handleSubmit=async (e)=>{
+        e.preventDefault();
+        setIsLoading(true);
+        setError(null);
+        const formData=new FormData(e.target);
+        const firstname=formData.get("firstname");
+        const lastname=formData.get("lastname");
+        const email=formData.get("email");
+        const phone=formData.get("contact");
+        const username=formData.get("username");
+        const password=formData.get("password");
+        const confirmPassword=formData.get("confirmPassword");
+        if(password!==confirmPassword){
+            setError("Passwords do not match");
+            setIsLoading(false);
+            return;
+        }
+        try{
+            const axiosInstance = axios.create({
+                baseURL: "http://localhost:3000/api",
+                withCredentials: true,
+            });
+            const response = await axiosInstance.post("/register", {
+                firstname,
+                lastname,
+                email,
+                phone,
+                username,
+                password,
+            });
+            console.log(response);
+        }
+        catch(error){
+            setError(error.response?.data?.message);
+            setIsLoading(false);
+        }
+        setIsLoading(false);
+    }
+
+
+
     return(
         <div className="register flex items-center justify-center min-h-screen bg-gray-100 overflow-y-scroll">
         <div className="login-container border-2 rounded-3xl shadow-lg h-[fit-content] lg:h-[80vh] w-[60vw] flex flex-col p-4 pt-0">
@@ -20,7 +66,7 @@ export default function Register(){
                         <h1 className="text-2xl font-semibold">Sign up</h1>
                         <h3 className="text-[0.6rem] text-gray-700">Login to access your expenses</h3>
                     </div>
-                    <form  className="input-grp flex flex-col space-y-1">
+                    <form onSubmit={handleSubmit}  className="input-grp flex flex-col space-y-1">
                         <div className="flex flex-col lg:flex-row lg:space-x-2">
                             <div className="flex flex-col">
                             <label htmlFor="firstname" className="text-xs">Firstname</label>
@@ -82,7 +128,7 @@ export default function Register(){
                     </form>
                     
                         <div className="text-red-500 text-xs text-center mt-2">
-                            Registration failed. Please try again.
+                            {error&&"Registration failed. Please try again."}
                         </div>
                  
                     

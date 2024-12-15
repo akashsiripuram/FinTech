@@ -8,11 +8,7 @@ const bcrypt = require("bcrypt");
 app.use(cors({origin:"http://localhost:5173",credentials:true}));
 app.use(express.json());
 
-let users = [
-  { id: "5", username: "John", password: "1234" },
-  { id: "6", name: "Alice", password: "1234" },
-  { id: "7", name: "Bob", password: "1234" },
-];
+
 
 let refreshTokens=[]
 app.post("/api/refresh",(req,res)=>{
@@ -40,13 +36,40 @@ const generateAccessToken=(user)=>{
 const generateRefreshToken=(user)=>{
     return jwt.sign({ id: user.id }, "myRefreshSecretKey");
 }
+app.post("/api/register", async (req, res) => {
+    const { firstname,
+        lastname,
+        email,
+        phone,
+        username,
+        password, } = req.body;
 
-app.post("/api/login", (req, res) => {
+    // Check if user already exists
+    const existingUser = users.find((u) => u.username === username);
+    if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+    }
+
+    // Hash the password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    // Save the user with the hashed password
+    const newUser = { id: String(users.length + 1), username, password: hashedPassword };
+    users.push(newUser);
+
+    res.status(201).json({ message: "User registered successfully" });
+});
+app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
   
   const user = users.find((u) => {
-    return u.username === username && u.password === password;
+    return u.username === username ;
   });
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
   if (user) {
     const accessToken = generateAccessToken(user);
     const refreshToken=generateRefreshToken(user);
