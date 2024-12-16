@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { MdDashboard } from "react-icons/md";
 import { FaMoneyBillWave, FaQuestionCircle } from "react-icons/fa";
 import { AiOutlineDollarCircle } from "react-icons/ai";
@@ -7,18 +7,16 @@ import { RiWallet3Line, RiLogoutBoxRLine } from "react-icons/ri";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { FiSettings } from "react-icons/fi";
-import { useNavigate } from "react-router-dom";
+
 
 export default function LeftBar() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Use navigate for redirect after logout
 
-  // Function to handle logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    document.cookie = "refreshToken=; Max-Age=0"; // Clear refresh token if stored in cookies
-    navigate("/login"); // Redirect to login
+  const handleLogout = async () => {
+    localStorage.removeItem("token"); // Clear the token
+    navigate("/auth/login"); // Redirect to login page
   };
+  
 
   return (
     <div className="left-bar flex flex-col h-screen shadow-lg">
@@ -29,32 +27,74 @@ export default function LeftBar() {
       <div className="overview flex flex-col space-y-2 px-4 mt-4">
         <div className="text-gray-500 text-xs">OVERVIEW</div>
         <ul className="space-y-2">
-          <NavLink to="/dashboard" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <MdDashboard />
             <span>Dashboard</span>
           </NavLink>
 
-          <NavLink to="/expenses" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/expenses"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <FaMoneyBillWave />
             <span>Expenses</span>
           </NavLink>
 
-          <NavLink to="/income" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/income"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <AiOutlineDollarCircle />
             <span>Income</span>
           </NavLink>
 
-          <NavLink to="/savings" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/savings"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <BiTargetLock />
             <span>Savings</span>
           </NavLink>
 
-          <NavLink to="/budgets" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/budgets"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <RiWallet3Line />
             <span>Budgets</span>
           </NavLink>
 
-          <NavLink to="/reports" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/reports"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <HiOutlineDocumentReport />
             <span>Reports</span>
           </NavLink>
@@ -64,17 +104,38 @@ export default function LeftBar() {
       <div className="notifications flex flex-col space-y-2 px-4 mt-6">
         <div className="text-gray-500 text-xs">SETTINGS</div>
         <ul className="space-y-2">
-          <NavLink to="/notifications" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/notifications"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <IoNotificationsOutline />
             <span>Notifications</span>
           </NavLink>
 
-          <NavLink to="/settings" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/settings"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <FiSettings />
             <span>Settings</span>
           </NavLink>
 
-          <NavLink to="/help" className="flex items-center space-x-2 text-sm cursor-pointer p-2">
+          <NavLink
+            to="/dashboard/help"
+            className={({ isActive }) =>
+              `flex items-center space-x-2 text-sm cursor-pointer p-2 ${
+                isActive ? "text-[#702DFF]" : "text-gray-600"
+              }`
+            }
+          >
             <FaQuestionCircle />
             <span>Help & Support</span>
           </NavLink>
@@ -83,7 +144,10 @@ export default function LeftBar() {
 
       <div className="logout mt-auto px-4 mb-6">
         <ul className="space-y-2">
-          <li className="flex items-center space-x-2 text-sm cursor-pointer p-2" onClick={handleLogout}>
+          <li
+            className="flex items-center space-x-2 text-sm cursor-pointer p-2"
+            onClick={handleLogout}
+          >
             <RiLogoutBoxRLine />
             <span>Logout</span>
           </li>

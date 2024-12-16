@@ -1,32 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { fetchProtectedData } from "../../services/authService";
 
 export default function Expenses() {
   const [categoryFilter, setCategoryFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [expenseFilter, setExpenseFilter] = useState("");
+  const [expenses, setExpenses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const dummyData = [
-    { id: 1, date: "2024-12-01", note: "Grocery shopping", detail: "Purchased groceries for the week", expense: 1200, category: "Food" },
-    { id: 2, date: "2024-12-02", note: "Electricity bill", detail: "Paid electricity bill for the month", expense: 800, category: "Bills" },
-    { id: 3, date: "2024-12-05", note: "Movie tickets", detail: "Watched a movie with friends", expense: 1500, category: "Entertainment" },
-    { id: 4, date: "2024-12-07", note: "Dining out", detail: "Dinner at a restaurant", expense: 2000, category: "Food" },
-    { id: 5, date: "2024-12-10", note: "Transportation", detail: "Taxi fare for work commute", expense: 500, category: "Transportation" },
-    { id: 6, date: "2024-12-12", note: "Fitness subscription", detail: "Paid for monthly gym membership", expense: 2500, category: "Health & Fitness" },
-    { id: 7, date: "2024-12-15", note: "Books", detail: "Bought new books for study", expense: 1200, category: "Education" },
-    { id: 8, date: "2024-12-15", note: "Books", detail: "Bought new books for study", expense: 1200, category: "Education" },
-    { id: 9, date: "2024-12-15", note: "Books", detail: "Bought new books for study", expense: 1200, category: "Education" },
-    { id: 10, date: "2024-12-15", note: "Books", detail: "Bought new books for study", expense: 1200, category: "Education" },
-    { id: 11, date: "2024-12-15", note: "Books", detail: "Bought new books for study", expense: 1200, category: "Education" },
-  ];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true); // Start loading
+        setError(null); // Reset any previous errors
+        const result = await fetchProtectedData(); // Fetch the data
+        console.log(result);
+  
+        // Check if result.user and result.user.expenses exist before setting
+        if (result && result.user && result.user.expenses) {
+          setExpenses(result.user.expenses); // Set the fetched data
+          console.log(JSON.stringify(result.user.expenses));
+          localStorage.setItem("user", JSON.stringify(result));
+        } else {
+          throw new Error("Expenses data not found");
+        }
+      } catch (error) {
+        setError("Error fetching data"); // Handle any errors during fetching
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false); // Stop loading
+      }
+    };
+  
+    fetchData(); // Call fetchData on mount
+  }, []);
+  
 
-  // Filtering logic based on the selected filters
-  const filteredData = dummyData.filter((expense) => {
+  const filteredData = (expenses || []).filter((expense) => {
     return (
       (categoryFilter ? expense.category === categoryFilter : true) &&
       (dateFilter ? expense.date.includes(dateFilter) : true) &&
       (expenseFilter ? expense.expense <= expenseFilter : true)
     );
   });
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-col p-5 h-screen overflow-hidden">
@@ -81,7 +110,7 @@ export default function Expenses() {
             {filteredData.length > 0 ? (
               filteredData.map((expense) => (
                 <tr key={expense.id}>
-                  <td className="px-4 py-2 border">{expense.date}</td>
+                  <td className="px-4 py-2 border">{formatDate(expense.date)}</td>
                   <td className="px-4 py-2 border">{expense.note}</td>
                   <td className="px-4 py-2 border">{expense.detail}</td>
                   <td className="px-4 py-2 border">{expense.expense}</td>

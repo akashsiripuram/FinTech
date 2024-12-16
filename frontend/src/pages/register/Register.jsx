@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { register } from "../../services/authService"; // Import the register function from authService
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -31,19 +32,10 @@ export default function Register() {
 
     setIsLoading(true);
     try {
-      const response = await fetch("http://localhost:3000/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
+      const data = await register(formData); // Pass form data to register function
       if (data.status === "ok") {
-        // Save token in localStorage and redirect to the homepage or dashboard
-        localStorage.setItem("token", data.token);
-        navigate("/dashboard"); // Redirect to the homepage or any other page
+        localStorage.setItem("token", data.token); // Save token to localStorage
+        navigate("/dashboard"); // Redirect to dashboard or another page
       } else {
         setError(data.message || "Registration failed");
       }
@@ -53,11 +45,10 @@ export default function Register() {
     } finally {
       setIsLoading(false);
     }
-};
-
+  };
 
   return (
-    <div className="register flex items-center justify-center min-h-screen bg-gray-100 overflow-y-scroll">
+    <div className="register flex items-center justify-center h-screen w-screen bg-gray-100 overflow-y-scroll">
       <div className="login-container border-2 rounded-3xl shadow-lg h-[fit-content] lg:h-[80vh] w-[60vw] flex flex-col p-4 pt-0">
         <div className="project-name text-[#702DFF] font-bold m-2 text-3xl">FinTech</div>
         <div className="flex flex-row justify-around space-x-2 p-6">
