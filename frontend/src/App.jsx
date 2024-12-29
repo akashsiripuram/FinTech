@@ -14,23 +14,24 @@ import Dashboard from "./pages/Dashboard/DashBoard";
 import NotFound from "./pages/error/NotFound";
 import Loading from "./components/loading/Loading";
 import Expenses from "./pages/Dashboard/Expenses";
+import Income from "./pages/Dashboard/Income";
 
 function App() {
-  const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
-  console.log(isLoading);
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
+ 
   const dispatch = useDispatch();
-console.log("updated:",user);
   
+
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
-  
 
-  
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-      <Loading type={'spokes'} color={"#702DFF"}/>
+        <Loading type={"spokes"} color={"#702DFF"} />
       </div>
     );
   }
@@ -48,8 +49,7 @@ console.log("updated:",user);
             <CheckAuth isAuthenticated={isAuthenticated}>
               <AuthLayout />
             </CheckAuth>
-          }
-        >
+          }>
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Route>
@@ -59,12 +59,12 @@ console.log("updated:",user);
             <CheckAuth isAuthenticated={isAuthenticated}>
               <UserLayout user={user} />
             </CheckAuth>
-          }
-        >
+          }>
           <Route path="dashboard" element={<Dashboard user={user} />} />
           <Route path="expenses" element={<Expenses user={user} />} />
-           {/*<Route path="income" element={<Dashboard />} />
-          <Route path="reports" element={<Dashboard />} />
+          <Route path="income" element={<Income user={user} />} />
+          <Route path="income/add" element={<Income user={user} />} />
+          {/*  <Route path="reports" element={<Dashboard />} />
           <Route path="savings" element={<Dashboard />} />
           <Route path="budgets" element={<Dashboard />} />
           <Route path="reports" element={<Dashboard />} />
@@ -72,7 +72,7 @@ console.log("updated:",user);
           <Route path="settings" element={<Dashboard />} />
           <Route path="help" element={<Dashboard />} /> */}
         </Route>
-        <Route path="*" element={<NotFound/>}/>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </div>
   );

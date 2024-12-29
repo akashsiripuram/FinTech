@@ -22,7 +22,7 @@ export default function RecentTransactions({ user }) {
   }, [expenses]);
   if(Array.isArray(fetchedExpenses))
   fetchedExpenses=fetchedExpenses.slice(-5).reverse();
-  console.log("hellow i am ",fetchedExpenses);
+
 
   
 

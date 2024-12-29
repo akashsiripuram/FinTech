@@ -40,7 +40,7 @@ export default function Register() {
     dispatch(registerUser(formData))
       .then((data) => {
         if (data?.payload?.success) {
-          console.log("Registered success");
+        
           toast.success(data.payload.message || "Login successful!");
           navigate("/auth/login");
         } else {

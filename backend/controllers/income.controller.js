@@ -1,41 +1,41 @@
-import Expense from "../models/Expense.js";
+import Income from "../models/Income.js";
 import User from "../models/User.js";
 
-export const addExpense=async (req,res)=>{
-    const {id,category,date,detail,expense,note}=req.body;
+export const addIncome=async (req,res)=>{
+    const {id,category,date,detail,income,note}=req.body;
     
     try{    
         const user=await User.findById(id);
-        const newExpense=new Expense({
+        const newIncome=new Income({
             category,
             date,
             detail,
-            expense,
+            income,
             note
         })
-        const savedExpense=await newExpense.save();
+        const savedIncome=await newIncome.save();
 
-        user.expenses.push(savedExpense._id);
+        user.income.push(savedIncome._id);
         const updatedUser=await user.save();
         
         res.status(200).json({
             success:true,
-            message:"Expense added successfully",
+            message:"Income added successfully",
             user:updatedUser
         })
     }catch(err){
        
         res.status(401).json({
             status:false,
-            message:"Expense not added"
+            message:"Income not added"
         })
     }
 
 }
 
-export const getUserWithExpenses = async (req, res) => {
+export const getUserWithIncome = async (req, res) => {
     try {
-      const user = await User.findById(req.user._id).populate("expenses"); // Assuming "expenses" references the Expense schema
+      const user = await User.findById(req.user._id).populate("income"); 
       if (!user) {
         return res.status(404).json({
           success: false,
@@ -43,14 +43,15 @@ export const getUserWithExpenses = async (req, res) => {
         });
       }
       
+      
       res.status(200).json({
         success: true,
-        expenses:user.expenses,
+        income: user.income
       });
     } catch (err) {
       res.status(500).json({
         success: false,
-        message: "Failed to fetch user and expenses",
+        message: "Failed to fetch user and Income",
       });
     }
   };
