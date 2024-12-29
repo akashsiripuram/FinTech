@@ -13,15 +13,18 @@ import UserLayout from "./components/layouts/UserLayout";
 import Dashboard from "./pages/Dashboard/DashBoard";
 import NotFound from "./pages/error/NotFound";
 import Loading from "./components/loading/Loading";
+import Expenses from "./pages/Dashboard/Expenses";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  console.log(isLoading);
   const dispatch = useDispatch();
-
+console.log("updated:",user);
   
   useEffect(() => {
     dispatch(checkAuth());
   }, [dispatch]);
+  
 
   
   if (isLoading) {
@@ -58,16 +61,16 @@ function App() {
             </CheckAuth>
           }
         >
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="expenses" element={<Dashboard />} />
-          <Route path="income" element={<Dashboard />} />
+          <Route path="dashboard" element={<Dashboard user={user} />} />
+          <Route path="expenses" element={<Expenses user={user} />} />
+           {/*<Route path="income" element={<Dashboard />} />
           <Route path="reports" element={<Dashboard />} />
           <Route path="savings" element={<Dashboard />} />
           <Route path="budgets" element={<Dashboard />} />
           <Route path="reports" element={<Dashboard />} />
           <Route path="notifications" element={<Dashboard />} />
           <Route path="settings" element={<Dashboard />} />
-          <Route path="help" element={<Dashboard />} />
+          <Route path="help" element={<Dashboard />} /> */}
         </Route>
         <Route path="*" element={<NotFound/>}/>
       </Routes>

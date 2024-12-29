@@ -3,6 +3,8 @@ import cors from 'cors';
 import authRouter from './routes/auth.route.js'; // Add .js extension for ES modules
 import cookieParser from 'cookie-parser';
 import mongoose from 'mongoose';
+import expenseRouter from "./routes/expense.route.js";
+
 
 mongoose
   .connect(
@@ -31,6 +33,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
+app.use("/api/user/dashboard",expenseRouter);
 
 app.listen("8080", () => {
   console.log("server listening on port :", 8080);

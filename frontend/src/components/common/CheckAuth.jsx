@@ -1,11 +1,11 @@
 import { Navigate, useLocation } from "react-router-dom";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 // eslint-disable-next-line react/prop-types
 function CheckAuth({ isAuthenticated, isLoading, children }) {
   const location = useLocation();
 
-  // Do not process logic until loading is completed
+  // Wait until loading is complete
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -14,30 +14,31 @@ function CheckAuth({ isAuthenticated, isLoading, children }) {
     );
   }
 
-  // Allow public access to the homepage
+  // Publicly accessible routes (e.g., homepage)
   if (location.pathname === "/") {
-    return <>{children}</>;
+    return children;
   }
 
-  // Handle authentication routes
+  // Authentication-related routes (e.g., login, register)
   if (location.pathname.startsWith("/auth")) {
-    return isAuthenticated ? <Navigate to="/user/dashboard" /> : <>{children}</>;
+    if (isAuthenticated) {
+      return <Navigate to="/user/dashboard" replace />;
+    }
+    return children;
   }
 
-  // Handle protected routes
+  // Protected routes (e.g., dashboard)
   if (location.pathname.startsWith("/user")) {
-    if(isAuthenticated){
-return <>{children}</>
-    }
-    else{
+    if (isAuthenticated) {
+      return children;
+    } else {
       toast.error("You are not authenticated");
-      return <Navigate to="/auth/login" />;
+      return <Navigate to="/auth/login" replace />;
     }
-    
   }
 
-  // Default fallback
-  return <Navigate to="/" />;
+  // Default fallback for undefined routes
+  return <Navigate to="/" replace />;
 }
 
 export default CheckAuth;

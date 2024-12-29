@@ -68,13 +68,16 @@ export const loginUser = async (req, res) => {
     }
     const token = jwt.sign(
       {
-        id: user._id,
+        _id:user._id,
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
         phone: user.phone,
         username: user.username,
         fullName: user.fullName,
+        expenses: user.expenses,
+        income: user.income,
+        savings: user.savings,
       },
       "secretkey",
       {
@@ -85,7 +88,7 @@ export const loginUser = async (req, res) => {
       success: true,
       message: "Logged in successfully",
       user: {
-        id: user._id,
+        _id: user._id,
         firstname: user.firstname,
         lastname: user.lastname,
         email: user.email,
@@ -125,6 +128,7 @@ export const authMiddleware = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, "secretkey");
     req.user = decoded;
+   
     next();
   } catch (err) {
     res.status(401).json({
